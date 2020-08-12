@@ -20,6 +20,9 @@
   }
   //Public methods
   return {
+    getItems: function(){
+      return data.items;
+    },
     logData: function(){
       return data;
     }
@@ -28,19 +31,71 @@
 
  // UI Controller
  const UICtrl = (function(){
+   const UISelectors = {
+     itemList: '#item-list',
+     addBtn: '.add-btn',
+     itemNameInput: '#item-name',
+     itemCaloriesInput: '#item-calories'
+
+   }
   // Public methods
   return {
+    populateItemList: function(items){
+      let html = '';
 
+      items.forEach(function(item){
+        html += `<li class="collection-item" id="item-${item.id}">
+        <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+        <a href="#" class="secondary-content">
+          <i class="edit-item fa fa-pencil"></i>
+        </a>
+      </li>`
+      });
+      
+      // Insert list items
+      document.querySelector(UISelectors.itemList).innerHTML = html;
+    },
+    getItemInput: function(){
+      return {
+        name:document.querySelector(UISelectors.itemNameInput).value,
+        calories:document.querySelector(UISelectors.itemCaloriesInput).value 
+      }
+    },
+    getSelectors: function(){
+      return UISelectors;
+    }
   }
  })();
 
  //App Controller
  const App = (function(ItemCtrl, UICtrl){
+   // Load event listeners
+   const loadEventListeners = function (){
+     // Get UI Selectors
+    const UISelectors = UICtrl.getSelectors();
+    // Add item event
+    document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
+   }
+   // Add item submit
+   const itemAddSubmit = function(e){
+     // Get form input from UI Controller
+     const input = UICtrl.getItemInput();
+
+     console.log(input);
+     e.preventDefault();
+   }
   
   //Public methods
   return {
     init: function(){
-      console.log('Initializing App...');
+      // Fetch items from data structure
+      const items = ItemCtrl.getItems();
+
+      // Populate list with items
+      UICtrl.populateItemList(items);
+
+      //Load event listeners
+      loadEventListeners();
     }
   }
 
